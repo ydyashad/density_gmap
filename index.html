@@ -29,19 +29,21 @@
 			}
 			svg.marker {width:60px; height:60px;}
 			
+			
 		</style>
 		<script>
 			$(document).ready(function(){
 				$("#map").css("width", $(window).innerWidth() - $(".span4").innerWidth() - 50);
 				$("#map").css("height", $(window).innerHeight() - 109);
 				$("#tab").css("height", $("#map").innerHeight()/2);
-				$("#pie").css("height", $("#map").innerHeight()/2);
+				$("#pie").css("height", $("#map").innerHeight()/2);				
 			});
 		</script>
 	</head>
 	<body>
 		<h1 style="text-align: center;">Time Series Map for Movement of People </h1> 
-		<div class="btn-group" style="margin:0 75px;">
+		<div class="btn-group" style="margin:0 55px;">
+			<button  id="btntoggle" class="btn"><i id="toggle" class="icon-play"></i></button >
 			<button  id="ch1" class="btn">08AM - 10AM</button >
 			<button  id="ch2" class="btn">10AM - 12AM</button >
 			<button  id="ch3"class="btn">12AM - 02PM</button >
@@ -116,10 +118,37 @@
 				marker.on("click", function(d){
 						//alert("Place: "+ d.key +"\n" + "vlaue: "+parseInt(d.value[i]));
 						//alert((parseInt(d.value[i]) + parseInt(d.value[i+1]) ) * 0.00045 + 30 +"\n"+ (parseInt(d.value[i]) + parseInt(d.value[i+1]) ));
+						var display_time = "Unknown";
+						if(i === 2)
+						{
+							display_time = "08AM - 10AM";
+						}
+						else if(i === 4)
+						{
+							display_time = "10AM - 12AM";
+						}
+						else if(i === 6)
+						{
+							display_time = "12AM - 02PM";
+						}
+						else if(i === 8)
+						{
+							display_time = "02PM - 04PM";
+						}
+						else if(i === 10)
+						{
+							display_time = "04PM - 06PM";
+						}
+						else if(i === 12)
+						{
+							display_time = "06PM - 08PM";
+						}
+						$("#dis_time").html(display_time);
 						$("#place").html(d.key);
 						$("#3g").html(d.value[i]);
 						$("#4g").html(d.value[i+1]);
 						$("#tot").html((parseInt(d.value[i]) + parseInt(d.value[i+1])));
+					
 					var chart = c3.generate({
 						bindto : "#pie",		
 						padding: {
@@ -153,9 +182,51 @@
 			  overlay.setMap(map);
 
 			}
-			
+		
+			var timer = null, 
+				interval = 3000,
+				value = 0
+				value1 = 0;
+				
+			$('#btntoggle').bind("click", function() {
+				if ($('#toggle').attr("class") === "icon-play")
+				{
+					$('#toggle').attr("class", "icon-pause");
+					if (timer !== null) return;
+					  timer = setInterval(function () {
+							if(value === 12)
+							{
+								value = 2;
+								value1 = 1;
+								$("#ch"+value1).addClass('active').siblings().removeClass('active');
+								d3.selectAll("circle").transition()
+									  .duration(10)
+									  .remove();
+								redraw(value);
+							}
+							else
+							{
+								value = value+2;
+								value1 = value1+1;
+								$("#ch"+value1).addClass('active').siblings().removeClass('active');
+								d3.selectAll("circle").transition()
+									  .duration(10)
+									  .remove();
+								redraw(value);
+							}	
+					  }, interval); 
+				}
+				else
+				{
+					$('#toggle').attr("class", "icon-play");
+					clearInterval(timer);
+					timer = null
+				}	
+			});
+
 			d3.select("#ch1")
 				.on("click", function(){
+				$(this).addClass('active').siblings().removeClass('active');
 				d3.selectAll("circle").transition()
 			      	  .duration(10)
 			      	  .remove();
@@ -164,6 +235,7 @@
 			
 			d3.select("#ch2")
 				.on("click", function(){
+				$(this).addClass('active').siblings().removeClass('active');
 				d3.selectAll("circle").transition()
 			      	  .duration(10)
 			      	  .remove();
@@ -172,6 +244,7 @@
 			
 			d3.select("#ch3")
 				.on("click", function(){
+				$(this).addClass('active').siblings().removeClass('active');
 				d3.selectAll("circle").transition()
 			      	  .duration(10)
 			      	  .remove();
@@ -180,6 +253,7 @@
 			
 			d3.select("#ch4")
 				.on("click", function(){
+				$(this).addClass('active').siblings().removeClass('active');
 				d3.selectAll("circle").transition()
 			      	  .duration(10)
 			      	  .remove();
@@ -188,6 +262,7 @@
 			
 			d3.select("#ch5")
 				.on("click", function(){
+				$(this).addClass('active').siblings().removeClass('active');
 				d3.selectAll("circle").transition()
 			      	  .duration(10)
 			      	  .remove();
@@ -196,6 +271,7 @@
 			
 			d3.select("#ch6")
 				.on("click", function(){
+				$(this).addClass('active').siblings().removeClass('active');
 				d3.selectAll("circle").transition()
 			      	  .duration(10)
 			      	  .remove();
@@ -207,6 +283,7 @@
 				<div id="pie"></div>
 				<div id="tab">
 					<table class="table table-bordered">
+						<tr><td>Time</td><td id="dis_time"></td></tr>
 						<tr><td>Place</td><td id="place"></td></tr>
 						<tr><td>3G Users</td><td id="3g"></td></tr>
 						<tr><td>4G Users</td><td id="4g"></td></tr>
