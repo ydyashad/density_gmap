@@ -59,7 +59,7 @@
 		<script type="text/javascript">	
 			//Adding a color scale that takes the domain of station boardings and outputs to a range of sequential colors
 			var colorScale = d3.scale.quantize().domain([6000,220000]).range(['#EDF8B1', '#7FCDBB', '#CD6F74', '#225EA8']);
-			
+			var rad = 0;
 			// Create the Google Map…
 			var map = new google.maps.Map(d3.select("#map").node(), {
 			  zoom: 12,
@@ -94,16 +94,20 @@
 			          .enter().append("svg:svg")
 			          .each(transform)
 			          .attr("class", "marker");
-
-			      // Add a circle.
+						
+				if(rad === 0)
+				{
+					rad = 1;
+				// Add a circle.
 			      marker.append("svg:circle")
-			      	  .transition()
-			      	  .duration(10)
-					  .delay(20)
+			      	  .attr("r", 0)
+					  .transition()
+			      	  .duration(1000)
+					  .delay(1000)
 			      // Size circles as a function of # of boardings (3rd value in json key)
 			          .attr("r", function(d){
-			          		return Math.sqrt((parseInt(d.value[i]) + parseInt(d.value[i+1]) )* 0.0045 + padding);
-			          })
+			          		return Math.sqrt((parseInt(d.value[i]) + parseInt(d.value[i+1]) )* 0.0035 + padding);
+			          }) 
 			          .attr("cx", padding)
 			          .attr("cy", padding)
 			          .style("opacity", .5)
@@ -114,10 +118,36 @@
 			          			return colorScale(colorValue);
 			          		} 
 			          });
+				}	  
+				else
+				{
+					d3.selectAll('.marker').selectAll('circle')
+					  .transition()
+			      	  .duration(1000)
+					  .attr("cx", padding)
+			          .attr("cy", padding)
+					  .attr("r", function(d){
+			          		return Math.sqrt((parseInt(d.value[i]) + parseInt(d.value[i+1]) )* 0.0035 + padding);
+			          })
+			          .style("opacity", .5)
+			          .style("fill", function(d) {
+			          		//get data value
+			          		var colorValue = (parseInt(d.value[i]) + parseInt(d.value[i+1]) )
+			          		if (colorValue) {
+			          			return colorScale(colorValue);
+			          		} 
+			          });
+				}
 					  
 				marker.on("click", function(d){
 						//alert("Place: "+ d.key +"\n" + "vlaue: "+parseInt(d.value[i]));
-						//alert((parseInt(d.value[i]) + parseInt(d.value[i+1]) ) * 0.00045 + 30 +"\n"+ (parseInt(d.value[i]) + parseInt(d.value[i+1]) ));
+						/*alert((parseInt(d.value[i]) + parseInt(d.value[i+1]) ) * 0.00045 + 30 +"\n"+ (parseInt(d.value[i]) + parseInt(d.value[i+1]) ));
+						d3.select(this).selectAll('circle').attr("r", 2)
+							.transition()
+							.duration(1000).ease('bounce').attr("r", function(d){
+			          		return Math.sqrt((parseInt(d.value[i]) + parseInt(d.value[i+1]) )* 0.0035 + padding);
+			          }); */
+							
 						var display_time = "Unknown";
 						if(i === 2)
 						{
@@ -182,7 +212,7 @@
 			  overlay.setMap(map);
 
 			}
-		
+			
 			var timer = null, 
 				interval = 3000,
 				value = 0
@@ -199,9 +229,6 @@
 								value = 2;
 								value1 = 1;
 								$("#ch"+value1).addClass('active').siblings().removeClass('active');
-								d3.selectAll("circle").transition()
-									  .duration(10)
-									  .remove();
 								redraw(value);
 							}
 							else
@@ -209,9 +236,6 @@
 								value = value+2;
 								value1 = value1+1;
 								$("#ch"+value1).addClass('active').siblings().removeClass('active');
-								d3.selectAll("circle").transition()
-									  .duration(10)
-									  .remove();
 								redraw(value);
 							}	
 					  }, interval); 
@@ -227,54 +251,36 @@
 			d3.select("#ch1")
 				.on("click", function(){
 				$(this).addClass('active').siblings().removeClass('active');
-				d3.selectAll("circle").transition()
-			      	  .duration(10)
-			      	  .remove();
 				redraw(2);
 			});
 			
 			d3.select("#ch2")
 				.on("click", function(){
 				$(this).addClass('active').siblings().removeClass('active');
-				d3.selectAll("circle").transition()
-			      	  .duration(10)
-			      	  .remove();
 				redraw(4);
 			});
 			
 			d3.select("#ch3")
 				.on("click", function(){
 				$(this).addClass('active').siblings().removeClass('active');
-				d3.selectAll("circle").transition()
-			      	  .duration(10)
-			      	  .remove();
 				redraw(6);
 			});
 			
 			d3.select("#ch4")
 				.on("click", function(){
 				$(this).addClass('active').siblings().removeClass('active');
-				d3.selectAll("circle").transition()
-			      	  .duration(10)
-			      	  .remove();
 				redraw(8);
 			});
 			
 			d3.select("#ch5")
 				.on("click", function(){
 				$(this).addClass('active').siblings().removeClass('active');
-				d3.selectAll("circle").transition()
-			      	  .duration(10)
-			      	  .remove();
 				redraw(10);
 			});
 			
 			d3.select("#ch6")
 				.on("click", function(){
 				$(this).addClass('active').siblings().removeClass('active');
-				d3.selectAll("circle").transition()
-			      	  .duration(10)
-			      	  .remove();
 				redraw(12);
 			});
 		</script>
